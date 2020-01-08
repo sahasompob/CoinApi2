@@ -31,7 +31,7 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
             view = layoutInflater.inflate(R.layout.coins_view, parent, false)
             return MovieItemViewHolder(view)
         } else {
-            view = layoutInflater.inflate(R.layout.coins_view_5, parent, false)
+            view = layoutInflater.inflate(R.layout.network_state_item, parent, false)
             return NetworkStateItemViewHolder(view)
         }
     }
@@ -42,7 +42,7 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
             (holder as MovieItemViewHolder).bind(getItem(position),context)
         }
         else {
-            (holder as NetworkStateItemViewHolder).bind(getItem(position),context)
+            (holder as NetworkStateItemViewHolder).bind(networkState)
         }
 
     }
@@ -53,13 +53,13 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
     }
 
     override fun getItemCount(): Int {
-//        return super.getItemCount() + if (hasExtraRow()) 1 else 0
-        return 10
+        return super.getItemCount() + if (hasExtraRow()) 1 else 0
+//        return 10
 
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (position>1 && (position+1) % 5 == 0) {
+        return if (hasExtraRow() && position == itemCount - 1) {
             NETWORK_VIEW_TYPE
         } else {
             MOVIE_VIEW_TYPE
@@ -84,36 +84,36 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
 
     class NetworkStateItemViewHolder (view: View) : RecyclerView.ViewHolder(view) {
 
-        fun bind(coin: Coin?,context: Context){
-            itemView.name.text = coin?.name
-            itemView.description.text =  coin?.description
-
-//            val coinsIconUrl = coin?.iconUrl
-//            Glide.with(itemView.context)
-//                .load(coinsIconUrl)
-//                .into(itemView.icon);
-
-        }
-//        fun bind(networkState: NetworkState?) {
-//            if (networkState != null && networkState == NetworkState.LOADING) {
-//                itemView.progress_bar_item.visibility = View.VISIBLE;
-//            }
-//            else  {
-//                itemView.progress_bar_item.visibility = View.GONE;
-//            }
+//        fun bind(coin: Coin?,context: Context){
+//            itemView.name.text = coin?.name
+//            itemView.description.text =  coin?.description
 //
-//            if (networkState != null && networkState == NetworkState.ERROR) {
-//                itemView.error_msg_item.visibility = View.VISIBLE;
-//                itemView.error_msg_item.text = networkState.msg;
-//            }
-//            else if (networkState != null && networkState == NetworkState.ENDOFLIST) {
-//                itemView.error_msg_item.visibility = View.VISIBLE;
-//                itemView.error_msg_item.text = networkState.msg;
-//            }
-//            else {
-//                itemView.error_msg_item.visibility = View.GONE;
-//            }
+////            val coinsIconUrl = coin?.iconUrl
+////            Glide.with(itemView.context)
+////                .load(coinsIconUrl)
+////                .into(itemView.icon);
+//
 //        }
+        fun bind(networkState: NetworkState?) {
+            if (networkState != null && networkState == NetworkState.LOADING) {
+                itemView.progress_bar_item.visibility = View.VISIBLE;
+            }
+            else  {
+                itemView.progress_bar_item.visibility = View.GONE;
+            }
+
+            if (networkState != null && networkState == NetworkState.ERROR) {
+                itemView.error_msg_item.visibility = View.VISIBLE;
+                itemView.error_msg_item.text = networkState.msg;
+            }
+            else if (networkState != null && networkState == NetworkState.ENDOFLIST) {
+                itemView.error_msg_item.visibility = View.VISIBLE;
+                itemView.error_msg_item.text = networkState.msg;
+            }
+            else {
+                itemView.error_msg_item.visibility = View.GONE;
+            }
+        }
     }
 
     class CoinsDiffCallback : DiffUtil.ItemCallback<Coin>() {
