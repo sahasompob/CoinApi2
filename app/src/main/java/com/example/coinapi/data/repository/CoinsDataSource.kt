@@ -20,7 +20,7 @@ class CoinsDataSource (private val apiService : Api, private val compositeDispos
         networkState.postValue(NetworkState.LOADING)
 
         compositeDisposable.add(
-            apiService.fetchCoins(0,params.requestedLoadSize)
+            apiService.fetchCoins(0,10)
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                     {
@@ -43,13 +43,8 @@ class CoinsDataSource (private val apiService : Api, private val compositeDispos
                 .subscribeOn(Schedulers.io())
                 .subscribe(
                     {
-                        if(it.data.stats.limit >= params.key) {
-                            networkState.postValue(NetworkState.LOADED)
-                            callback.onResult(it.data.coins, params.key + 10)
-                        }
-                        else{
-                            networkState.postValue(NetworkState.ENDOFLIST)
-                        }
+                        networkState.postValue(NetworkState.LOADED)
+                        callback.onResult(it.data.coins, params.key + 10)
                     },
                     {
                         networkState.postValue(NetworkState.ERROR)

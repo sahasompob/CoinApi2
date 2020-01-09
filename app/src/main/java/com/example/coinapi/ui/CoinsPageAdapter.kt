@@ -2,6 +2,7 @@ package com.example.coinapi.ui
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
 
     val MOVIE_VIEW_TYPE = 1
     val NETWORK_VIEW_TYPE = 2
+    val POSITION_FIVE = 3
 
     private var networkState: NetworkState? = null
 
@@ -30,6 +32,9 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
         if (viewType == MOVIE_VIEW_TYPE) {
             view = layoutInflater.inflate(R.layout.coins_view, parent, false)
             return MovieItemViewHolder(view)
+        }else if (viewType == POSITION_FIVE){
+            view = layoutInflater.inflate(R.layout.coins_view_5, parent, false)
+            return EveryFivePositionItemViewHolder(view)
         } else {
             view = layoutInflater.inflate(R.layout.network_state_item, parent, false)
             return NetworkStateItemViewHolder(view)
@@ -39,7 +44,11 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         if (getItemViewType(position) == MOVIE_VIEW_TYPE) {
+
             (holder as MovieItemViewHolder).bind(getItem(position),context)
+        } else if (getItemViewType(position) == POSITION_FIVE){
+
+            (holder as EveryFivePositionItemViewHolder).bind(getItem(position),context)
         }
         else {
             (holder as NetworkStateItemViewHolder).bind(networkState)
@@ -61,6 +70,8 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
     override fun getItemViewType(position: Int): Int {
         return if (hasExtraRow() && position == itemCount - 1) {
             NETWORK_VIEW_TYPE
+        } else if (position>1 && (position+1) % 5 == 0){
+            POSITION_FIVE
         } else {
             MOVIE_VIEW_TYPE
         }
@@ -70,14 +81,15 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
 
         fun bind(coin: Coin?,context: Context) {
             itemView.name.text = coin?.name
-            itemView.description.text =  coin?.description
+            itemView.description.text =  coin?.iconUrl
 
-//            val coinsIconUrl = coin?.iconUrl
-//            Glide.with(itemView.context)
-//                .load(coinsIconUrl)
-//                .into(itemView.icon);
+            val coinsIconUrl = coin?.iconUrl
+            Glide.with(itemView.context)
+                .load(coinsIconUrl)
+                .disallowHardwareConfig()
+                .into(itemView.icon);
 
-
+            Log.d("MainActivity", coin?.iconUrl);
         }
 
     }
@@ -114,6 +126,22 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
                 itemView.error_msg_item.visibility = View.GONE;
             }
         }
+    }
+
+    class EveryFivePositionItemViewHolder (view: View) : RecyclerView.ViewHolder(view) {
+
+        fun bind(coin: Coin?,context: Context) {
+            itemView.name.text = coin?.name
+            itemView.description.text =  coin?.description
+
+//            val coinsIconUrl = coin?.iconUrl
+//            Glide.with(itemView.context)
+//                .load(coinsIconUrl)
+//                .into(itemView.icon);
+
+
+        }
+
     }
 
     class CoinsDiffCallback : DiffUtil.ItemCallback<Coin>() {
