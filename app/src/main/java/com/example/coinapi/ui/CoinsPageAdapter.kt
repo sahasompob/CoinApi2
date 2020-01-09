@@ -2,6 +2,7 @@ package com.example.coinapi.ui
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,12 +14,13 @@ import com.bumptech.glide.Glide
 import com.example.coinapi.R
 import com.example.coinapi.data.repository.NetworkState
 import com.example.coinapi.data.vo.Coin
+import com.github.twocoffeesoneteam.glidetovectoryou.GlideToVectorYou
 import kotlinx.android.synthetic.main.coins_view.view.*
 import kotlinx.android.synthetic.main.network_state_item.view.*
 
 class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, RecyclerView.ViewHolder>(CoinsDiffCallback()) {
 
-    val MOVIE_VIEW_TYPE = 1
+    val COINS_VIEW_TYPE = 1
     val NETWORK_VIEW_TYPE = 2
     val POSITION_FIVE = 3
 
@@ -29,7 +31,7 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
         val layoutInflater = LayoutInflater.from(parent.context)
         val view: View
 
-        if (viewType == MOVIE_VIEW_TYPE) {
+        if (viewType == COINS_VIEW_TYPE) {
             view = layoutInflater.inflate(R.layout.coins_view, parent, false)
             return MovieItemViewHolder(view)
         }else if (viewType == POSITION_FIVE){
@@ -43,7 +45,7 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-        if (getItemViewType(position) == MOVIE_VIEW_TYPE) {
+        if (getItemViewType(position) == COINS_VIEW_TYPE) {
 
             (holder as MovieItemViewHolder).bind(getItem(position),context)
         } else if (getItemViewType(position) == POSITION_FIVE){
@@ -73,7 +75,7 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
         } else if (position>1 && (position+1) % 5 == 0){
             POSITION_FIVE
         } else {
-            MOVIE_VIEW_TYPE
+            COINS_VIEW_TYPE
         }
     }
 
@@ -84,12 +86,18 @@ class CoinsPageAdapter(public val context: Context) : PagedListAdapter<Coin, Rec
             itemView.description.text =  coin?.iconUrl
 
             val coinsIconUrl = coin?.iconUrl
-            Glide.with(itemView.context)
-                .load(coinsIconUrl)
-                .disallowHardwareConfig()
-                .into(itemView.icon);
+            val uriIcon = Uri.parse(coinsIconUrl)
+//            Glide.with(itemView.context)
+//                .load(coinsIconUrl)
+//                .disallowHardwareConfig()
+//                .into(itemView.icon)
 
-            Log.d("MainActivity", coin?.iconUrl);
+            GlideToVectorYou
+                .init()
+                .with(context)
+                .load(uriIcon, itemView.icon);
+
+            Log.d("aaa", coin?.iconUrl);
         }
 
     }
